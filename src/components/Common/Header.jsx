@@ -1,11 +1,13 @@
 import { Search, Sun, Moon } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
-import SearchModal from './SearchModal'
+import SearchModal from '../Landing/SearchModal'
+import { NavLink } from 'react-router'
 
 const Header = () => {
     const [isDarkMode, setIsDarkMode] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
+    const [showAN, setShowAN] = useState(false)
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme')
@@ -50,6 +52,26 @@ const Header = () => {
         }
     }, [isDarkMode, isSearchOpen])
 
+    // Scroll detection to show/hide AN text
+    useEffect(() => {
+        const handleScroll = () => {
+            const headerImage = document.querySelector('[data-header-image]')
+            if (headerImage) {
+                const rect = headerImage.getBoundingClientRect()
+                // If HeaderImage is not visible (scrolled past it)
+                const isHeaderImageVisible = rect.bottom > 0 && rect.top < window.innerHeight
+                setShowAN(!isHeaderImageVisible)
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        handleScroll() // Initial check
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll)
+        }
+    }, [])
+
     const toggleDarkMode = () => {
         if (isDarkMode) {
             document.documentElement.setAttribute('data-theme', 'light')
@@ -72,9 +94,15 @@ const Header = () => {
             }} data-header>
                 <div className='max-w-3xl mx-auto border-x-2 border-dashed' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
                     <div className='flex justify-between items-center h-12 md:h-15 p-3'>
-                        <span className='text-lg md:text-xl font-semibold'>AN</span>
+                        {/* AN Text - Only visible when scrolled past HeaderImage */}
+                        <span className={`text-lg md:text-xl font-semibold transition-opacity duration-300 ${showAN ? 'opacity-100' : 'opacity-0'}`} style={{ color: 'var(--text-primary)' }}>
+                            AN
+                        </span>
+                        {/* Spacer to maintain layout when AN is hidden */}
+                        <div className={`${showAN ? 'hidden' : 'block'} w-8 md:w-10`}></div>
+
                         <div className='flex items-center gap-3 md:gap-4'>
-                            <a href="/blog" className='text-sm md:text-base hover:text-gray-600 transition-colors'>Blog</a>
+                            <NavLink to="/blog" className='text-sm md:text-base hover:text-gray-600 transition-colors'>Blog</NavLink>
                             <div className='flex items-center gap-2 cursor-pointer'>
                                 <button
                                     onClick={() => setIsSearchOpen(true)}

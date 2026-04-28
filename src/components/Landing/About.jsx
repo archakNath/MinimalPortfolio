@@ -1,7 +1,10 @@
 import React from 'react'
+import Heading from './Heading'
 
 const About = () => {
     return (
+        <>
+        <Heading title="About"/>
         <div className='w-full border-b-2 border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} data-about>
             <div className='max-w-3xl border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
                 <div className='py-4 md:py-6 px-4 md:px-6'>
@@ -32,6 +35,7 @@ const About = () => {
                 </div>
             </div>
         </div>
+        </>
     )
 }
 

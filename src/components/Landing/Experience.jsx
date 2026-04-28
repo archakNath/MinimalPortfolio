@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Briefcase, Calendar, MapPin, CheckCircle, Circle, ExternalLink, Code, Award, Clock, Users, Rocket, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { GiGraduateCap } from 'react-icons/gi'
+import Heading from './Heading'
 
 const Experience = () => {
 
@@ -24,7 +25,7 @@ const Experience = () => {
                         "Migrating legacy systems to newer technologies for improved performance and maintainability",
                         "Implementing features and fixing bugs in existing applications to enhance user experience",
                     ],
-                    skills: ["Java", "Spring Boot", "Spring", "JSP", "Gitlab", "Jasper Reports", "MySQL", "PostgreSQL", "Oracle DB", "C#", "ASP.NET", "OSGi", "CSS", "Eclipse IDE" ]
+                    skills: ["Java", "Spring Boot", "Spring", "JSP", "Gitlab", "Jasper Reports", "MySQL", "PostgreSQL", "Oracle DB", "C#", "ASP.NET", "OSGi", "CSS", "Eclipse IDE"]
                 }
             ]
         },
@@ -199,125 +200,128 @@ const Experience = () => {
     )
 
     return (
-        <div className='w-full border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} data-experience>
-            {/* Experiences */}
-            <div className='w-full'>
-                {experiences.map((exp) => (
-                    <div className='w-full border-b-2 border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} key={exp.id}>
-                        <div className='max-w-3xl mx-auto border-l-2 border-r-2 border-dashed py-4 px-2 md:px-4' style={{ borderColor: 'var(--border-color)' }}>
-                            {/* Company Header */}
-                            <div className='flex items-center gap-3'>
-                                <div className='w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-dashed' style={{ borderColor: 'var(--border-color)' }}>
-                                    <img src={exp.logo} alt={exp.companyName} className='w-full h-full object-cover' />
-                                </div>
+        <>
+            <Heading title="Experience" />
+            <div className='w-full border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} data-experience>
+                {/* Experiences */}
+                <div className='w-full'>
+                    {experiences.map((exp) => (
+                        <div className='w-full border-b-2 border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} key={exp.id}>
+                            <div className='max-w-3xl mx-auto border-l-2 border-r-2 border-dashed py-4 px-2 md:px-4' style={{ borderColor: 'var(--border-color)' }}>
+                                {/* Company Header */}
+                                <div className='flex items-center gap-3'>
+                                    <div className='w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-dashed' style={{ borderColor: 'var(--border-color)' }}>
+                                        <img src={exp.logo} alt={exp.companyName} className='w-full h-full object-cover' />
+                                    </div>
 
-                                <div className='flex-1'>
-                                    <div className='flex items-center gap-2 flex-wrap'>
-                                        <a
-                                            href={exp.companyUrl}
-                                            target='_blank'
-                                            rel='noopener noreferrer'
-                                            className='text-lg md:text-xl font-mono font-bold hover:underline inline-flex items-center gap-2'
-                                            style={{ color: 'var(--text-primary)' }}
-                                        >
-                                            {exp.companyName}
-                                        </a>
-                                        {exp.isActive && <BlinkingDot />}
+                                    <div className='flex-1'>
+                                        <div className='flex items-center gap-2 flex-wrap'>
+                                            <a
+                                                href={exp.companyUrl}
+                                                target='_blank'
+                                                rel='noopener noreferrer'
+                                                className='text-lg md:text-xl font-mono font-bold hover:underline inline-flex items-center gap-2'
+                                                style={{ color: 'var(--text-primary)' }}
+                                            >
+                                                {exp.companyName}
+                                            </a>
+                                            {exp.isActive && <BlinkingDot />}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Positions */}
-                            <div className='space-y-4 ml-14 border-dashed pl-6' style={{ borderColor: 'var(--border-color)' }}>
-                                {exp.positions.map((position, idx) => {
-                                    const duration = calculateDuration(position.startDate, position.endDate)
-                                    const startDateFormatted = new Date(position.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
-                                    const endDateFormatted = position.endDate === '∞' ? '∞' : new Date(position.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
-                                    const isExpanded = expandedPositions[`${exp.id}-${idx}`] || false
-                                    const hasDescription = position.description && position.description.length > 0
-                                    const hasSkills = position.skills && position.skills.length > 0
+                                {/* Positions */}
+                                <div className='space-y-4 ml-14 border-dashed pl-6' style={{ borderColor: 'var(--border-color)' }}>
+                                    {exp.positions.map((position, idx) => {
+                                        const duration = calculateDuration(position.startDate, position.endDate)
+                                        const startDateFormatted = new Date(position.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+                                        const endDateFormatted = position.endDate === '∞' ? '∞' : new Date(position.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+                                        const isExpanded = expandedPositions[`${exp.id}-${idx}`] || false
+                                        const hasDescription = position.description && position.description.length > 0
+                                        const hasSkills = position.skills && position.skills.length > 0
 
-                                    return (
-                                        <div key={idx} className='space-y-2'>
-                                            <div className='flex items-center justify-between'>
-                                                <div className='flex items-center gap-2'>
-                                                    <span style={{ color: 'var(--text-secondary)' }}>{position.icon}</span>
-                                                    <h3 className='text-base md:text-lg font-mono font-semibold' style={{ color: 'var(--text-primary)' }}>
-                                                        {position.title}
-                                                    </h3>
-                                                </div>
-                                                {hasDescription && (
-                                                    <button
-                                                        onClick={() => toggleExpand(exp.id, idx)}
-                                                        className='p-1 rounded-md transition-all duration-200 hover:scale-110'
-                                                        style={{ color: 'var(--text-secondary)' }}
-                                                    >
-                                                        {isExpanded ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            <div className='flex flex-wrap items-center gap-2 text-sm font-mono' style={{ color: 'var(--text-secondary)' }}>
-                                                <span className='px-2 py-0.5 rounded' style={{ backgroundColor: 'var(--bg-secondary)' }}>
-                                                    {position.type}
-                                                </span>
-                                                <span>•</span>
-                                                <span>{startDateFormatted} - {endDateFormatted}</span>
-                                                <span>•</span>
-                                                <span className='inline-flex items-center gap-1'>
-                                                    <Clock className='w-3 h-3' />
-                                                    {duration}
-                                                </span>
-                                            </div>
-
-                                            {position.location && (
-                                                <div className='flex items-center gap-1 text-xs font-mono ml-[6px] mt-1' style={{ color: 'var(--text-secondary)' }}>
-                                                    <MapPin className='w-3 h-3' />
-                                                    <span>{position.location}</span>
-                                                </div>
-                                            )}
-
-                                            {/* Description - Only when expanded */}
-                                            {isExpanded && hasDescription && (
-                                                <ul className='space-y-1 ml-6 mt-2'>
-                                                    {position.description.map((point, pointIdx) => (
-                                                        <li key={pointIdx} className='flex items-start gap-2 text-sm font-mono' style={{ color: 'var(--text-secondary)' }}>
-                                                            <span className='mt-1.5 w-1 h-1 rounded-full flex-shrink-0' style={{ backgroundColor: 'var(--text-secondary)' }}></span>
-                                                            <span>{point}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-
-                                            {/* Skills - Always visible */}
-                                            {hasSkills && (
-                                                <div className='flex flex-wrap gap-2'>
-                                                    {position.skills.map((skill, skillIdx) => (
-                                                        <span
-                                                            key={skillIdx}
-                                                            className='px-2 py-1 text-xs font-mono rounded-full'
-                                                            style={{
-                                                                backgroundColor: 'var(--bg-secondary)',
-                                                                border: '1px solid var(--border-color)',
-                                                                color: 'var(--text-secondary)'
-                                                            }}
+                                        return (
+                                            <div key={idx} className='space-y-2'>
+                                                <div className='flex items-center justify-between'>
+                                                    <div className='flex items-center gap-2'>
+                                                        <span style={{ color: 'var(--text-secondary)' }}>{position.icon}</span>
+                                                        <h3 className='text-base md:text-lg font-mono font-semibold' style={{ color: 'var(--text-primary)' }}>
+                                                            {position.title}
+                                                        </h3>
+                                                    </div>
+                                                    {hasDescription && (
+                                                        <button
+                                                            onClick={() => toggleExpand(exp.id, idx)}
+                                                            className='p-1 rounded-md transition-all duration-200 hover:scale-110'
+                                                            style={{ color: 'var(--text-secondary)' }}
                                                         >
-                                                            {skill}
-                                                        </span>
-                                                    ))}
+                                                            {isExpanded ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}
+                                                        </button>
+                                                    )}
                                                 </div>
-                                            )}
 
-                                            
-                                        </div>
-                                    )
-                                })}
+                                                <div className='flex flex-wrap items-center gap-2 text-sm font-mono' style={{ color: 'var(--text-secondary)' }}>
+                                                    <span className='px-2 py-0.5 rounded' style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                                                        {position.type}
+                                                    </span>
+                                                    <span>•</span>
+                                                    <span>{startDateFormatted} - {endDateFormatted}</span>
+                                                    <span>•</span>
+                                                    <span className='inline-flex items-center gap-1'>
+                                                        <Clock className='w-3 h-3' />
+                                                        {duration}
+                                                    </span>
+                                                </div>
+
+                                                {position.location && (
+                                                    <div className='flex items-center gap-1 text-xs font-mono ml-[6px] mt-1' style={{ color: 'var(--text-secondary)' }}>
+                                                        <MapPin className='w-3 h-3' />
+                                                        <span>{position.location}</span>
+                                                    </div>
+                                                )}
+
+                                                {/* Description - Only when expanded */}
+                                                {isExpanded && hasDescription && (
+                                                    <ul className='space-y-1 ml-6 mt-2'>
+                                                        {position.description.map((point, pointIdx) => (
+                                                            <li key={pointIdx} className='flex items-start gap-2 text-sm font-mono' style={{ color: 'var(--text-secondary)' }}>
+                                                                <span className='mt-1.5 w-1 h-1 rounded-full flex-shrink-0' style={{ backgroundColor: 'var(--text-secondary)' }}></span>
+                                                                <span>{point}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+
+                                                {/* Skills - Always visible */}
+                                                {hasSkills && (
+                                                    <div className='flex flex-wrap gap-2'>
+                                                        {position.skills.map((skill, skillIdx) => (
+                                                            <span
+                                                                key={skillIdx}
+                                                                className='px-2 py-1 text-xs font-mono rounded-full'
+                                                                style={{
+                                                                    backgroundColor: 'var(--bg-secondary)',
+                                                                    border: '1px solid var(--border-color)',
+                                                                    color: 'var(--text-secondary)'
+                                                                }}
+                                                            >
+                                                                {skill}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 

@@ -13,6 +13,7 @@ import {
     SiMysql
 } from 'react-icons/si'
 import { TbBrandCSharp, TbReport } from 'react-icons/tb'
+import Heading from './Heading'
 
 const Stack = () => {
     const techStack = [
@@ -44,6 +45,8 @@ const Stack = () => {
 ]
 
     return (
+        <>
+        <Heading title="Stack"/>
         <div className='w-full border-b-2 border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} data-stack>
             <div className='max-w-3xl border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
                 <div className='px-3 py-3'>
@@ -70,6 +73,8 @@ const Stack = () => {
                 </div>
             </div>
         </div>
+        </>
+        
     )
 }
 
