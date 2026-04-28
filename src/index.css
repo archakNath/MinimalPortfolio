@@ -1,0 +1,224 @@
+@import "tailwindcss";
+/* Light mode (default) - Wireframe theme */
+:root {
+  --bg-primary: #fafafa;
+  --bg-secondary: #f5f5f5;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-color: #cccccc;
+  --kbd-bg: rgba(255, 255, 255, 0.9);
+  --kbd-border: #999999;
+  --kbd-text: #333333;
+  --grid-color: #e5e5e5;
+  --dotted-color: #d4d4d4;
+}
+
+/* Dark mode - Wireframe theme */
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #242424;
+  --text-primary: #e0e0e0;
+  --text-secondary: #aaaaaa;
+  --border-color: #444444;
+  --kbd-bg: rgba(42, 42, 42, 0.9);
+  --kbd-border: #555555;
+  --kbd-text: #e0e0e0;
+  --grid-color: #2a2a2a;
+  --dotted-color: #252525;
+}
+
+/* Main grid background */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* 8px grid pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 8px 8px;
+  opacity: 0.5;
+}
+
+/* Subtle dot grid overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(var(--dotted-color) 0.5px, transparent 0.5px);
+  background-size: 16px 16px;
+  opacity: 0.3;
+}
+
+/* Ensure content appears above the grid */
+#root, .app, .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header styles - NO background, transparent so grid shows through */
+[data-header] {
+  background-color: transparent !important;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(0px);
+}
+
+/* Add left and right wireframe lines to the inner container */
+/* [data-header] > div {
+  border-left: 2px dashed var(--border-color);
+  border-right: 2px dashed var(--border-color);
+} */
+
+/* Optional: Add a slight blur behind header for readability */
+[data-header]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-primary);
+  opacity: 0.7;
+  z-index: -1;
+  pointer-events: none;
+}
+
+[data-header] a {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 4px;
+}
+
+[data-header] a:hover {
+  color: var(--text-primary);
+  text-decoration-style: solid;
+}
+
+[data-header] span:first-child {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+[data-header] .bg-gray-100 {
+  background-color: rgba(245, 245, 245, 0.9);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  backdrop-filter: blur(4px);
+}
+
+[data-theme="dark"] [data-header] .bg-gray-100 {
+  background-color: rgba(36, 36, 36, 0.9);
+}
+
+[data-header] .text-gray-400 {
+  color: var(--text-secondary);
+}
+
+[data-header] kbd {
+  background-color: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  color: var(--kbd-text);
+  font-family: 'Courier New', monospace;
+  box-shadow: none;
+}
+
+[data-header] button {
+  background-color: rgba(245, 245, 245, 0.9);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(4px);
+}
+
+[data-theme="dark"] [data-header] button {
+  background-color: rgba(36, 36, 36, 0.9);
+}
+
+[data-header] button:hover {
+  background-color: var(--border-color);
+  border-color: var(--text-secondary);
+}
+
+/* Animation for the grid */
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+body::before {
+  animation: pulse 4s ease-in-out infinite;
+}
+
+/* Style all borders as dashed/dotted for wireframe feel */
+input, textarea, select, button, .card {
+  border-style: dashed;
+}
+
+/* Make all box shadows very subtle or none */
+* {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Fade animations for text switching */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+.animate-fade-in-down {
+    animation: fadeInDown 0.5s ease-out forwards;
+}
+
+.animate-fade-out-up {
+    animation: fadeOutUp 0.5s ease-out forwards;
+}
+
+.footer-link {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 4px;
+    transition: all 0.2s ease;
+}
+
+.footer-link:hover {
+    text-decoration-style: solid;
+}
