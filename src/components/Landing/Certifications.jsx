@@ -76,7 +76,7 @@ const Certifications = () => {
                         <div key={cert.id} className='w-full' style={{ borderColor: 'var(--border-color)' }}>
                             <div className='max-w-3xl border-l-2 border-b-2 border-r-2 border-dashed mx-auto py-2' style={{ borderColor: 'var(--border-color)' }}>
                                 {/* Certificate Row */}
-                                <div className='flex items-center justify-between px-3 py-2 cursor-pointer  transition-colors'
+                                <div className='flex items-center justify-between px-3 py-2 cursor-pointer'
                                     onClick={() => window.open(cert.link, '_blank')}>
                                     <div className='flex items-center gap-3'>
                                         <span style={{ color: 'var(--text-secondary)' }}>{cert.icon}</span>
@@ -102,7 +102,7 @@ const Certifications = () => {
                                         </div>
 
                                         {/* Tooltip */}
-                                        <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 transition-all duration-200 ${showTooltip[cert.id] ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'
+                                        <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 transition-all hidden md:block duration-200 ${showTooltip[cert.id] ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'
                                             }`}>
                                             <div className='px-2 py-1 text-xs font-mono whitespace-nowrap rounded shadow-lg'
                                                 style={{

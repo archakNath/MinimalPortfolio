@@ -229,7 +229,7 @@ const Projects = () => {
                                                     </a>
 
                                                     {/* Tooltip */}
-                                                    <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 transition-all duration-200 ${showLinkTooltip[project.id] ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'
+                                                    <div className={`absolute bottom-full left-1/2 transform hidden md:block -translate-x-1/2 transition-all duration-200 ${showLinkTooltip[project.id] ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'
                                                         }`}>
                                                         <div className='px-2 py-1 text-xs font-mono whitespace-nowrap rounded shadow-lg'
                                                             style={{
