@@ -222,3 +222,7 @@ input, textarea, select, button, .card {
 .footer-link:hover {
     text-decoration-style: solid;
 }
+
+.menu-item-hover:hover {
+    background-color: var(--bg-secondary) !important;
+}

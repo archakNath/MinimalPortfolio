@@ -231,7 +231,7 @@ const Experience = () => {
                                 </div>
 
                                 {/* Positions */}
-                                <div className='space-y-4 ml-14 border-dashed pl-6' style={{ borderColor: 'var(--border-color)' }}>
+                                <div className='space-y-4 ml-4 md:ml-10 border-dashed pl-6' style={{ borderColor: 'var(--border-color)' }}>
                                     {exp.positions.map((position, idx) => {
                                         const duration = calculateDuration(position.startDate, position.endDate)
                                         const startDateFormatted = new Date(position.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
