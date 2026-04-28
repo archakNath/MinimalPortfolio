@@ -119,7 +119,7 @@ const Blogs = () => {
                                         <a
                                             key={blog.slug}
                                             href={`/blog/${blog.slug}`}
-                                            className={`group p-4 transition-all duration-200 ${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
+                                            className={`group p-4 transition-all duration-200 md:${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
                                                 } border-dashed border-b-2 md:border-b-0`}
                                             style={{
                                                 borderColor: 'var(--border-color)',
@@ -162,7 +162,7 @@ const Blogs = () => {
 
             {/* View All Blogs Button - Show when there are more blogs to see */}
             {hasMoreBlogs && (
-                <div className='w-full border-b-2 border-t-2 border-dashed relative' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
+                <div className='w-full border-b-2 md:border-t-2 border-dashed relative' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
                     <div className='max-w-3xl mx-auto border-l-2 border-r-2 py-3 border-dashed relative' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
                         <div className='text-center'>
                             <NavLink

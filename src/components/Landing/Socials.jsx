@@ -32,7 +32,7 @@ const Socials = () => {
                 <div>
 
                     {/* Single Row with Three Columns */}
-                    <div className='grid grid-cols-1 md:grid-cols-3 gap-2 px-2'>
+                    <div className='grid grid-cols-1 md:grid-cols-3 gap-2 md:px-2'>
                         {socialLinks.map((social, index) => (
                             <a
                                 key={index}

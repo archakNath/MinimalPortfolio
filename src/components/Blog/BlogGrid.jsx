@@ -139,7 +139,7 @@ const BlogGrid = () => {
                                             <NavLink
                                                 key={blog.slug}
                                                 to={`/blog/${blog.slug}`}
-                                                className={`group p-4 transition-all duration-200 ${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
+                                                className={`group p-4 transition-all duration-200 border-0 md:${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
                                                     } border-dashed border-b-2 md:border-b-0`}
                                                 style={{
                                                     borderColor: 'var(--border-color)',
@@ -175,7 +175,7 @@ const BlogGrid = () => {
 
                                         {/* Placeholder for odd number of blogs in last row */}
                                         {needsPlaceholder && (
-                                            <div className='p-4 border-l-2 border-dashed border-b-2 md:border-b-0 flex flex-col items-center justify-center text-center'
+                                            <div className='p-4 md:border-l-2 border-dashed border-b-2 md:border-b-0 flex flex-col items-center justify-center text-center'
                                                 style={{
                                                     borderColor: 'var(--border-color)'
                                                 }}

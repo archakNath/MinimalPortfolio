@@ -202,7 +202,7 @@ const Header = () => {
                         {isMenuOpen && (
                             <div
                                 data-menu-dropdown
-                                className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 w-48 rounded-lg shadow-lg z-50'
+                                className='absolute bottom-full overflow-hidden left-1/2 transform -translate-x-1/2 mb-3 w-48 rounded-lg shadow-lg z-50'
                                 style={{
                                     backgroundColor: 'var(--bg-primary)',
                                     border: '1px solid var(--border-color)'
