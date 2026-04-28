@@ -223,6 +223,10 @@ input, textarea, select, button, .card {
     text-decoration-style: solid;
 }
 
+.menu-item-active {
+    background-color: var(--bg-secondary) !important;
+}
+
 .menu-item-hover:hover {
     background-color: var(--bg-secondary) !important;
 }

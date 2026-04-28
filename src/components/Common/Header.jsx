@@ -1,7 +1,7 @@
-import { Search, Sun, Moon, Menu, X } from 'lucide-react'
+import { Search, Sun, Moon, Menu, X, ArrowUp } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import SearchModal from '../Landing/SearchModal'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 
 const Header = () => {
     const [isDarkMode, setIsDarkMode] = useState(false)
@@ -9,6 +9,11 @@ const Header = () => {
     const [showTooltip, setShowTooltip] = useState(false)
     const [showAN, setShowAN] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isScrollingUp, setIsScrollingUp] = useState(true)
+    const [lastScrollY, setLastScrollY] = useState(0)
+    const [showScrollButton, setShowScrollButton] = useState(false)
+    const location = useLocation()
+    const isHomePage = location.pathname === '/'
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme')
@@ -53,15 +58,34 @@ const Header = () => {
         }
     }, [isDarkMode, isSearchOpen])
 
-    // Scroll detection to show/hide AN text
+    // Scroll detection to show/hide AN text and scroll button
     useEffect(() => {
         const handleScroll = () => {
-            const headerImage = document.querySelector('[data-header-image]')
-            if (headerImage) {
-                const rect = headerImage.getBoundingClientRect()
-                const isHeaderImageVisible = rect.bottom > 0 && rect.top < window.innerHeight
-                setShowAN(!isHeaderImageVisible)
+            // Handle AN text visibility (only on homepage)
+            if (isHomePage) {
+                const headerImage = document.querySelector('[data-header-image]')
+                if (headerImage) {
+                    const rect = headerImage.getBoundingClientRect()
+                    const isHeaderImageVisible = rect.bottom > 0 && rect.top < window.innerHeight
+                    setShowAN(!isHeaderImageVisible)
+                }
+            } else {
+                setShowAN(true) // Always show AN on non-home pages
             }
+
+            // Detect scroll direction (always)
+            const currentScrollY = window.scrollY
+            setLastScrollY(prevLastScrollY => {
+                if (currentScrollY > prevLastScrollY) {
+                    setIsScrollingUp(false)
+                } else if (currentScrollY < prevLastScrollY) {
+                    setIsScrollingUp(true)
+                }
+                return currentScrollY
+            })
+
+            // Show button only when scrolled past 200px (always)
+            setShowScrollButton(currentScrollY > 200)
         }
 
         window.addEventListener('scroll', handleScroll)
@@ -70,7 +94,7 @@ const Header = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll)
         }
-    }, [])
+    }, [isHomePage]) // Add isHomePage as dependency
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -96,17 +120,24 @@ const Header = () => {
     }
 
     const toggleMenu = (e) => {
-        e.stopPropagation() // Prevent event bubbling
+        e.stopPropagation()
         setIsMenuOpen(prev => {
             console.log('Menu toggled from:', prev, 'to:', !prev)
             return !prev
         })
     }
 
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }
+
     return (
         <>
-            {/* Desktop Header */}
-            <div className='w-full border-b-2 border-dashed z-50 hidden md:block' style={{
+            {/* Header */}
+            <div className='w-full border-b-2 border-dashed z-50' style={{
                 borderBottomColor: 'var(--border-color)',
                 backgroundColor: 'var(--bg-primary)',
                 position: 'sticky',
@@ -120,11 +151,11 @@ const Header = () => {
                         <div className={`${showAN ? 'hidden' : 'block'} w-8 md:w-10`}></div>
 
                         <div className='flex items-center gap-3 md:gap-4'>
-                            <NavLink to="/blog" className='text-sm md:text-base hover:text-gray-600 transition-colors'>Blog</NavLink>
+                            <NavLink to="/blog" className='text-sm hidden md:block md:text-base hover:text-gray-600 transition-colors'>Blog</NavLink>
                             <div className='flex items-center gap-2 cursor-pointer'>
                                 <button
                                     onClick={() => setIsSearchOpen(true)}
-                                    className='flex items-center gap-2 bg-gray-100 px-2 py-1.5 rounded-md hover:bg-gray-200 transition-colors'
+                                    className='flex items-center hidden md:block gap-2 bg-gray-100 px-2 py-1.5 rounded-md hover:bg-gray-200 transition-colors'
                                 >
                                     <Search className='w-4 h-4' />
                                     <div className='hidden md:flex gap-1'>
@@ -146,7 +177,7 @@ const Header = () => {
                                     </button>
 
                                     <div className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 transition-all duration-200 ${showTooltip ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-1'}`}>
-                                        <div className='px-2 py-1 text-xs font-mono whitespace-nowrap rounded shadow-lg'
+                                        <div className='px-2 py-1 text-xs hidden md:block font-mono whitespace-nowrap rounded shadow-lg'
                                             style={{
                                                 backgroundColor: 'var(--bg-secondary)',
                                                 color: 'var(--text-primary)',
@@ -171,8 +202,8 @@ const Header = () => {
             </div>
 
             {/* Mobile Floating Action Bar */}
-            <div className='fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 md:hidden'>
-                <div className='flex items-center gap-2 px-4 py-2 rounded-full shadow-lg'
+            <div className='fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 md:hidden'>
+                <div className='flex items-center gap-2 px-2 py-1 rounded-lg shadow-lg'
                     style={{
                         backgroundColor: 'var(--bg-secondary)',
                         border: '1px solid var(--border-color)',
@@ -180,7 +211,7 @@ const Header = () => {
                     }}>
                     <button
                         onClick={() => setIsSearchOpen(true)}
-                        className='flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200 hover:scale-105'
+                        className='flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200'
                         style={{ color: 'var(--text-primary)' }}
                     >
                         <Search className='w-5 h-5' />
@@ -209,33 +240,58 @@ const Header = () => {
                                 }}
                             >
                                 <NavLink
+                                    to="/"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={({ isActive }) =>
+                                        `flex items-center justify-between px-4 py-3 text-sm font-mono transition-colors menu-item-hover ${isActive ? 'menu-item-active' : ''
+                                        }`
+                                    }
+                                    style={{ color: 'var(--text-primary)' }}
+                                >
+                                    <span>Home</span>
+                                    {location.pathname === '/' && <span className='text-xs opacity-70'>✓</span>}
+                                </NavLink>
+                                <NavLink
                                     to="/blog"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className='flex items-center px-4 py-3 text-sm font-mono transition-colors menu-item-hover'
+                                    className={({ isActive }) =>
+                                        `flex items-center justify-between px-4 py-3 text-sm font-mono transition-colors menu-item-hover ${isActive ? 'menu-item-active' : ''
+                                        }`
+                                    }
                                     style={{ color: 'var(--text-primary)' }}
                                 >
-                                    Blog
+                                    <span>Blog</span>
+                                    {location.pathname === '/blog' && <span className='text-xs opacity-70'>✓</span>}
                                 </NavLink>
-                                <button
-                                    onClick={() => {
-                                        toggleDarkMode()
-                                        setIsMenuOpen(false)
-                                    }}
-                                    className='flex items-center justify-between w-full px-4 py-3 text-sm font-mono transition-colors menu-item-hover'
-                                    style={{ color: 'var(--text-primary)' }}
-                                >
-                                    <span>Toggle Mode</span>
-                                    <kbd className='px-1.5 py-0.5 text-xs font-mono rounded' style={{
-                                        backgroundColor: 'var(--bg-secondary)',
-                                        color: 'var(--text-secondary)',
-                                        border: '1px solid var(--border-color)'
-                                    }}>D</kbd>
-                                </button>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
+
+            {/* Scroll to Top Floating Button */}
+            {showScrollButton && (
+                <button
+                    onClick={scrollToTop}
+                    className={`fixed bottom-3 right-3 z-50 p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${isScrollingUp ? 'opacity-100 active' : 'opacity-40'
+                        }`}
+                    style={{
+                        backgroundColor: 'var(--bg-secondary)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                    }}
+                >
+                    <ArrowUp className='w-5 h-5' />
+                </button>
+            )}
+
+            {/* Glass effect div at bottom of mobile view */}
+            <div className='fixed bottom-0 left-0 right-0 z-40 pointer-events-none md:hidden'
+                style={{
+                    height: '80px',
+                    background: 'linear-gradient(to top, var(--bg-primary) 0%, transparent 100%)'
+                }}
+            ></div>
 
             <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>

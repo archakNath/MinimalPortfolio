@@ -40,6 +40,7 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+            <div className='h-15 block md:hidden'></div>
         </>
     )
 }
