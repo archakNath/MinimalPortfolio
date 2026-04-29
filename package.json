@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lexical/code": "^0.44.0",
+    "@lexical/react": "^0.44.0",
     "@mdxeditor/editor": "^3.55.0",
     "@tailwindcss/vite": "^4.2.4",
+    "lexical": "^0.44.0",
     "lucide-react": "^1.11.0",
     "prismjs": "^1.30.0",
     "react": "^19.2.5",
