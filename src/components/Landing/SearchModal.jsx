@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Search, Home, BookOpen, Briefcase, Award, User, Calendar, Tag as TagIcon } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router'
+import blogUtils from '../../utils/blogUtils'  // Static import instead of dynamic
 
 const SearchItem = ({ item, index, selectedIndex, setSelectedIndex, itemRefs, handleItemClick }) => {
     const Icon = item.icon
@@ -75,6 +76,7 @@ const SearchModal = ({ isOpen, onClose }) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [blogPosts, setBlogPosts] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
     const modalRef = useRef(null)
     const inputRef = useRef(null)
     const listRef = useRef(null)
@@ -96,11 +98,12 @@ const SearchModal = ({ isOpen, onClose }) => {
         { id: 'about', name: "About", command: "#about", description: "Learn more about me", icon: User, type: 'portfolio', isHash: true },
     ]
 
-    // Load blog posts dynamically
+    // Load blog posts dynamically on mount and when modal opens
     useEffect(() => {
         const loadBlogPosts = async () => {
+            if (!isOpen) return
+            setIsLoading(true)
             try {
-                const blogUtils = (await import('../../utils/blogUtils')).default
                 const posts = await blogUtils.getAllPosts()
                 const blogItems = posts.map(post => ({
                     id: `blog-${post.slug}`,
@@ -116,12 +119,12 @@ const SearchModal = ({ isOpen, onClose }) => {
             } catch (error) {
                 console.error('Failed to load blog posts:', error)
                 setBlogPosts([])
+            } finally {
+                setIsLoading(false)
             }
         }
         
-        if (isOpen) {
-            loadBlogPosts()
-        }
+        loadBlogPosts()
     }, [isOpen])
 
     // Filter items based on search query
@@ -139,8 +142,6 @@ const SearchModal = ({ isOpen, onClose }) => {
     const filteredBlogs = filterItems(blogPosts)
 
     const hasResults = filteredMenu.length > 0 || filteredPortfolio.length > 0 || filteredBlogs.length > 0
-
-    // Calculate total for keyboard navigation
     const totalItems = filteredMenu.length + filteredPortfolio.length + filteredBlogs.length
 
     useEffect(() => {
@@ -344,7 +345,11 @@ const SearchModal = ({ isOpen, onClose }) => {
                             }
                         `}
                     </style>
-                    {!hasResults ? (
+                    {isLoading ? (
+                        <div className='p-8 text-center font-mono' style={{ color: 'var(--text-secondary)' }}>
+                            Loading blog posts...
+                        </div>
+                    ) : !hasResults ? (
                         <div className='p-8 text-center font-mono' style={{ color: 'var(--text-secondary)' }}>
                             No results found for "{searchQuery}"
                         </div>
