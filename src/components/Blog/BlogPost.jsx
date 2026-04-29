@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router'
 import { ArrowLeft, Calendar, User, Tag } from 'lucide-react'
 import mdxParser from '../../utils/mdxParser'
 import blogUtils from '../../utils/blogUtils'
-import CodeBlock from '../Common/CodeBlock'
 
 const BlogPost = () => {
     const { slug } = useParams()
