@@ -1,33 +1,147 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Search } from 'lucide-react'
-import { useNavigate } from 'react-router'
+import { Search, Home, BookOpen, Briefcase, Award, User, Calendar, Tag as TagIcon } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router'
+
+const SearchItem = ({ item, index, selectedIndex, setSelectedIndex, itemRefs, handleItemClick }) => {
+    const Icon = item.icon
+    
+    return (
+        <div
+            ref={el => itemRefs.current[index] = el}
+            onClick={() => handleItemClick(item)}
+            onMouseEnter={() => setSelectedIndex(index)}
+            className='flex items-center justify-between p-3 cursor-pointer transition-colors border-b border-dashed'
+            style={{
+                borderBottomColor: 'var(--border-color)',
+                backgroundColor: index === selectedIndex
+                    ? (document.documentElement.getAttribute('data-theme') === 'dark' ? '#3f3f46' : '#e5e7eb')
+                    : 'transparent',
+                borderLeft: index === selectedIndex ? '3px solid #3b82f6' : '3px solid transparent',
+            }}
+        >
+            <div className='flex items-start gap-3 flex-1 min-w-0'>
+                <Icon className='w-4 h-4 flex-shrink-0 mt-0.5' style={{ color: 'var(--text-secondary)' }} />
+                <div className='flex flex-col flex-1 min-w-0'>
+                    <div className='flex items-center gap-2 flex-wrap'>
+                        <span className='font-mono font-semibold' style={{
+                            color: 'var(--text-primary)',
+                            fontWeight: index === selectedIndex ? '700' : '600'
+                        }}>
+                            {item.name}
+                        </span>
+                        {item.type === 'blog' && item.tags && item.tags.length > 0 && (
+                            <div className='flex gap-1 flex-shrink-0'>
+                                {item.tags.slice(0, 2).map(tag => (
+                                    <span key={tag} className='text-xs px-1.5 py-0.5 rounded flex items-center gap-0.5' style={{
+                                        backgroundColor: index === selectedIndex
+                                            ? (document.documentElement.getAttribute('data-theme') === 'dark' ? '#52525b' : '#d1d5db')
+                                            : 'var(--bg-secondary)',
+                                        color: 'var(--text-secondary)'
+                                    }}>
+                                        <TagIcon className='w-3 h-3' />
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    <span className='text-xs font-mono mt-0.5 line-clamp-2' style={{ color: 'var(--text-secondary)' }}>
+                        {item.description}
+                    </span>
+                    {item.type === 'blog' && item.date && (
+                        <div className='flex items-center gap-1 text-xs font-mono mt-1 opacity-60' style={{ color: 'var(--text-secondary)' }}>
+                            <Calendar className='w-3 h-3' />
+                            <span>{new Date(item.date).toLocaleDateString()}</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+            {item.type !== 'blog' && (
+                <span className='text-xs font-mono px-2 py-1 rounded ml-2 flex-shrink-0' style={{
+                    backgroundColor: index === selectedIndex
+                        ? (document.documentElement.getAttribute('data-theme') === 'dark' ? '#52525b' : '#d1d5db')
+                        : 'var(--bg-secondary)',
+                    color: 'var(--text-secondary)',
+                    border: `1px solid ${index === selectedIndex ? '#3b82f6' : 'var(--border-color)'}`,
+                }}>
+                    {item.command}
+                </span>
+            )}
+        </div>
+    )
+}
 
 const SearchModal = ({ isOpen, onClose }) => {
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
+    const [blogPosts, setBlogPosts] = useState([])
     const modalRef = useRef(null)
     const inputRef = useRef(null)
     const listRef = useRef(null)
     const itemRefs = useRef([])
     const navigate = useNavigate()
+    const location = useLocation()
 
-    // Search items with actual routes
-    const searchItems = [
-        { id: 1, name: "Home", command: "/", description: "Return to home page", isHash: false },
-        { id: 2, name: "Blog", command: "/blog", description: "Read my latest articles", isHash: false },
-        { id: 3, name: "Projects", command: "#projects", description: "View all my projects", isHash: true },
-        { id: 4, name: "Experience", command: "#experience", description: "Check my work experience", isHash: true },
-        { id: 5, name: "Certifications", command: "#certifications", description: "View my certifications", isHash: true },
-        { id: 6, name: "About", command: "#about", description: "Learn more about me", isHash: true },
-        { id: 7, name: "Contact", command: "/contact", description: "Get in touch with me", isHash: false },
+    // Menu items
+    const menuItems = [
+        { id: 'home', name: "Home", command: "/", description: "Return to home page", icon: Home, type: 'menu' },
+        { id: 'blog', name: "Blog", command: "/blog", description: "Read my latest articles", icon: BookOpen, type: 'menu' },
     ]
 
+    // Portfolio items
+    const portfolioItems = [
+        { id: 'projects', name: "Projects", command: "#projects", description: "View all my projects", icon: Briefcase, type: 'portfolio', isHash: true },
+        { id: 'experience', name: "Experience", command: "#experience", description: "Check my work experience", icon: Briefcase, type: 'portfolio', isHash: true },
+        { id: 'certifications', name: "Certifications", command: "#certifications", description: "View my certifications", icon: Award, type: 'portfolio', isHash: true },
+        { id: 'about', name: "About", command: "#about", description: "Learn more about me", icon: User, type: 'portfolio', isHash: true },
+    ]
+
+    // Load blog posts dynamically
+    useEffect(() => {
+        const loadBlogPosts = async () => {
+            try {
+                const blogUtils = (await import('../../utils/blogUtils')).default
+                const posts = await blogUtils.getAllPosts()
+                const blogItems = posts.map(post => ({
+                    id: `blog-${post.slug}`,
+                    name: post.title,
+                    slug: post.slug,
+                    description: post.excerpt || `Read blog post: ${post.title}`,
+                    icon: BookOpen,
+                    type: 'blog',
+                    date: post.date,
+                    tags: post.tags
+                }))
+                setBlogPosts(blogItems)
+            } catch (error) {
+                console.error('Failed to load blog posts:', error)
+                setBlogPosts([])
+            }
+        }
+        
+        if (isOpen) {
+            loadBlogPosts()
+        }
+    }, [isOpen])
+
     // Filter items based on search query
-    const filteredItems = searchItems.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.command.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filterItems = (items) => {
+        if (!searchQuery) return items
+        return items.filter(item =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (item.tags && item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())))
+        )
+    }
+
+    const filteredMenu = filterItems(menuItems)
+    const filteredPortfolio = filterItems(portfolioItems)
+    const filteredBlogs = filterItems(blogPosts)
+
+    const hasResults = filteredMenu.length > 0 || filteredPortfolio.length > 0 || filteredBlogs.length > 0
+
+    // Calculate total for keyboard navigation
+    const totalItems = filteredMenu.length + filteredPortfolio.length + filteredBlogs.length
 
     useEffect(() => {
         if (isOpen && inputRef.current) {
@@ -44,7 +158,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                 case 'ArrowDown':
                     e.preventDefault()
                     setSelectedIndex(prev => {
-                        if (prev < filteredItems.length - 1) {
+                        if (prev < totalItems - 1) {
                             return prev + 1
                         }
                         return prev
@@ -61,8 +175,9 @@ const SearchModal = ({ isOpen, onClose }) => {
                     break
                 case 'Enter':
                     e.preventDefault()
-                    if (filteredItems[selectedIndex]) {
-                        handleItemClick(filteredItems[selectedIndex])
+                    const selectedItem = getItemAtIndex(selectedIndex)
+                    if (selectedItem) {
+                        handleItemClick(selectedItem)
                     }
                     break
                 case 'Escape':
@@ -76,7 +191,28 @@ const SearchModal = ({ isOpen, onClose }) => {
 
         window.addEventListener('keydown', handleKeyDown)
         return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [isOpen, filteredItems, selectedIndex])
+    }, [isOpen, totalItems, selectedIndex])
+
+    // Get item by flat index
+    const getItemAtIndex = (index) => {
+        let currentIndex = 0
+        
+        if (index < filteredMenu.length) {
+            return filteredMenu[index]
+        }
+        currentIndex += filteredMenu.length
+        
+        if (index < currentIndex + filteredPortfolio.length) {
+            return filteredPortfolio[index - currentIndex]
+        }
+        currentIndex += filteredPortfolio.length
+        
+        if (index < currentIndex + filteredBlogs.length) {
+            return filteredBlogs[index - currentIndex]
+        }
+        
+        return null
+    }
 
     // Scroll to selected item
     useEffect(() => {
@@ -113,20 +249,15 @@ const SearchModal = ({ isOpen, onClose }) => {
     }, [searchQuery])
 
     const handleItemClick = (item) => {
-        // Handle dark mode toggle separately
-        if (item.command === '/dark') {
-            const event = new CustomEvent('toggleDarkMode')
-            window.dispatchEvent(event)
+        if (item.type === 'blog') {
+            navigate(`/blog/${item.slug}`)
             onClose()
             return
         }
-
-        // Handle hash links (scroll to section on home page)
+        
         if (item.isHash) {
-            // If not on home page, navigate to home page first
-            if (window.location.pathname !== '/') {
+            if (location.pathname !== '/') {
                 navigate('/')
-                // Wait for navigation to complete then scroll
                 setTimeout(() => {
                     const element = document.querySelector(item.command)
                     if (element) {
@@ -135,7 +266,6 @@ const SearchModal = ({ isOpen, onClose }) => {
                     onClose()
                 }, 100)
             } else {
-                // Already on home page, just scroll
                 const element = document.querySelector(item.command)
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth' })
@@ -144,8 +274,7 @@ const SearchModal = ({ isOpen, onClose }) => {
             }
             return
         }
-
-        // Navigate to the route
+        
         navigate(item.command)
         onClose()
     }
@@ -183,7 +312,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Type a command or search..."
+                            placeholder="Type a command or search blogs..."
                             className='w-full bg-transparent outline-none text-base font-mono'
                             style={{ color: 'var(--text-primary)' }}
                         />
@@ -202,7 +331,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                     </div>
                 </div>
 
-                {/* Section 2: List of Items - No Scrollbar */}
+                {/* Section 2: List of Items */}
                 <div
                     ref={listRef}
                     className='max-h-96 overflow-y-auto'
@@ -215,49 +344,72 @@ const SearchModal = ({ isOpen, onClose }) => {
                             }
                         `}
                     </style>
-                    {filteredItems.length > 0 ? (
-                        filteredItems.map((item, index) => (
-                            <div
-                                key={item.id}
-                                ref={el => itemRefs.current[index] = el}
-                                onClick={() => handleItemClick(item)}
-                                onMouseEnter={() => setSelectedIndex(index)}
-                                className={`flex items-center justify-between p-3 cursor-pointer transition-colors border-b border-dashed ${index === filteredItems.length - 1 ? 'border-b-0' : ''
-                                    }`}
-                                style={{
-                                    borderBottomColor: index === filteredItems.length - 1 ? 'transparent' : 'var(--border-color)',
-                                    backgroundColor: index === selectedIndex
-                                        ? (document.documentElement.getAttribute('data-theme') === 'dark' ? '#3f3f46' : '#e5e7eb')
-                                        : 'transparent',
-                                    borderLeft: index === selectedIndex ? '3px solid #3b82f6' : '3px solid transparent',
-                                }}
-                            >
-                                <div className='flex flex-col'>
-                                    <span className='font-mono font-semibold' style={{
-                                        color: 'var(--text-primary)',
-                                        fontWeight: index === selectedIndex ? '700' : '600'
-                                    }}>
-                                        {item.name}
-                                    </span>
-                                    <span className='text-xs font-mono' style={{ color: 'var(--text-secondary)' }}>
-                                        {item.description}
-                                    </span>
-                                </div>
-                                <span className='text-xs font-mono px-2 py-1 rounded' style={{
-                                    backgroundColor: index === selectedIndex
-                                        ? (document.documentElement.getAttribute('data-theme') === 'dark' ? '#52525b' : '#d1d5db')
-                                        : 'var(--bg-secondary)',
-                                    color: 'var(--text-secondary)',
-                                    border: `1px solid ${index === selectedIndex ? '#3b82f6' : 'var(--border-color)'}`,
-                                }}>
-                                    {item.command}
-                                </span>
-                            </div>
-                        ))
-                    ) : (
+                    {!hasResults ? (
                         <div className='p-8 text-center font-mono' style={{ color: 'var(--text-secondary)' }}>
                             No results found for "{searchQuery}"
                         </div>
+                    ) : (
+                        <>
+                            {/* Menu Section */}
+                            {filteredMenu.length > 0 && (
+                                <div>
+                                    <div className='px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider' style={{ color: 'var(--text-secondary)' }}>
+                                        Menu
+                                    </div>
+                                    {filteredMenu.map((item, idx) => (
+                                        <SearchItem
+                                            key={item.id}
+                                            item={item}
+                                            index={idx}
+                                            selectedIndex={selectedIndex}
+                                            setSelectedIndex={setSelectedIndex}
+                                            itemRefs={itemRefs}
+                                            handleItemClick={handleItemClick}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Portfolio Section */}
+                            {filteredPortfolio.length > 0 && (
+                                <div>
+                                    <div className='px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider' style={{ color: 'var(--text-secondary)' }}>
+                                        Portfolio
+                                    </div>
+                                    {filteredPortfolio.map((item, idx) => (
+                                        <SearchItem
+                                            key={item.id}
+                                            item={item}
+                                            index={filteredMenu.length + idx}
+                                            selectedIndex={selectedIndex}
+                                            setSelectedIndex={setSelectedIndex}
+                                            itemRefs={itemRefs}
+                                            handleItemClick={handleItemClick}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Blog Section */}
+                            {filteredBlogs.length > 0 && (
+                                <div>
+                                    <div className='px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider' style={{ color: 'var(--text-secondary)' }}>
+                                        Blog Posts ({filteredBlogs.length})
+                                    </div>
+                                    {filteredBlogs.map((item, idx) => (
+                                        <SearchItem
+                                            key={item.id}
+                                            item={item}
+                                            index={filteredMenu.length + filteredPortfolio.length + idx}
+                                            selectedIndex={selectedIndex}
+                                            setSelectedIndex={setSelectedIndex}
+                                            itemRefs={itemRefs}
+                                            handleItemClick={handleItemClick}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 
@@ -268,7 +420,21 @@ const SearchModal = ({ isOpen, onClose }) => {
                     </span>
                     <div className='flex items-center gap-3 text-xs font-mono'>
                         <div className='flex items-center gap-2'>
-                            <span style={{ color: 'var(--text-secondary)' }}>Go to Page</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Navigate</span>
+                            <kbd className='px-1.5 py-0.5 text-xs font-mono font-semibold rounded shadow-sm'
+                                style={{
+                                    backgroundColor: 'var(--bg-secondary)',
+                                    color: 'var(--text-primary)',
+                                    border: '1px solid var(--border-color)'
+                                }}>
+                                ↑↓
+                            </kbd>
+                        </div>
+
+                        <div className='w-px h-4' style={{ backgroundColor: 'var(--border-color)' }}></div>
+
+                        <div className='flex items-center gap-2'>
+                            <span style={{ color: 'var(--text-secondary)' }}>Select</span>
                             <kbd className='px-1.5 py-0.5 text-xs font-mono font-semibold rounded shadow-sm'
                                 style={{
                                     backgroundColor: 'var(--bg-secondary)',

@@ -1,47 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ArrowRight, Search } from 'lucide-react'
 import { NavLink } from 'react-router'
+import blogUtils from '../../utils/blogUtils'
 
 const BlogGrid = () => {
     const [searchQuery, setSearchQuery] = useState('')
+    const [allBlogs, setAllBlogs] = useState([])
+    const [loading, setLoading] = useState(true)
 
-    const allBlogs = [
-        {
-            title: "Building a Component Library with React and Tailwind",
-            description: "Learn how to create a reusable component library that scales across multiple projects.",
-            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop",
-            date: "2025-04-15",
-            slug: "building-component-library"
-        },
-        {
-            title: "Mastering TypeScript: Advanced Patterns",
-            description: "Deep dive into advanced TypeScript patterns for better type safety and developer experience.",
-            image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=600&h=400&fit=crop",
-            date: "2025-04-10",
-            slug: "mastering-typescript"
-        },
-        {
-            title: "The Art of Pixel-Perfect Design Implementation",
-            description: "Tips and tricks for implementing designs with precision and attention to detail.",
-            image: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600&h=400&fit=crop",
-            date: "2025-04-05",
-            slug: "pixel-perfect-design"
-        },
-        {
-            title: "Optimizing Next.js Applications for Performance",
-            description: "Techniques to improve loading times and overall performance in Next.js apps.",
-            image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop",
-            date: "2025-03-28",
-            slug: "optimizing-nextjs"
-        },
-        {
-            title: "Another Blog Post",
-            description: "This is an extra blog post that won't be shown.",
-            image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop",
-            date: "2025-03-20",
-            slug: "another-blog"
+    useEffect(() => {
+        const loadBlogs = async () => {
+            const posts = await blogUtils.getAllPosts()
+            setAllBlogs(posts)
+            setLoading(false)
         }
-    ]
+        loadBlogs()
+    }, [])
 
     // Filter blogs based on search query
     const filteredBlogs = allBlogs.filter(blog =>
@@ -102,109 +76,119 @@ const BlogGrid = () => {
                 </div>
             </div>
 
-            {/* No Blogs Case */}
-            {totalBlogs === 0 && (
-                <div className='w-full h-[80vh] border-b-2 border-dashed' data-blogs style={{ borderBottomColor: 'var(--border-color)' }}>
-                    <div className='max-w-3xl h-full border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
-                        <div className='px-3 py-4'>
-                            <p className='font-mono' style={{ color: 'var(--text-secondary)' }}>
-                                {searchQuery ? `No blogs found matching "${searchQuery}"` : "No blog to show."}
-                            </p>
-                        </div>
-                    </div>
+            {loading && (
+                <div className='w-full h-[80vh] flex items-center justify-center'>
+                    <p className='font-mono' style={{ color: 'var(--text-secondary)' }}>Loading blogs...</p>
                 </div>
             )}
 
-            {totalBlogs > 0 && (
-                <div className='w-full border-b-2 border-dashed relative hidden md:block' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
-                    <div className='max-w-3xl mx-auto border-l-2 border-r-2 border-dashed relative' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)', height: '20px' }}>
-                        <div className='w-[19px] h-full mx-auto border-l-2 border-r-2 border-dashed' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+            {!loading && (
+                <>
+                    {/* No Blogs Case */}
+                    {totalBlogs === 0 && (
+                        <div className='w-full h-[80vh] border-b-2 border-dashed' data-blogs style={{ borderBottomColor: 'var(--border-color)' }}>
+                            <div className='max-w-3xl h-full border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+                                <div className='px-3 py-4'>
+                                    <p className='font-mono' style={{ color: 'var(--text-secondary)' }}>
+                                        {searchQuery ? `No blogs found matching "${searchQuery}"` : "No blog to show."}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    )}
 
-            {/* Blog Rows - Show all blogs */}
-            {totalBlogs > 0 && rows.map((row, rowIndex) => {
-                const isLastRow = rowIndex === rows.length - 1
-                const needsPlaceholder = isLastRow && isLastRowOdd
+                    {totalBlogs > 0 && (
+                        <div className='w-full border-b-2 border-dashed relative hidden md:block' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
+                            <div className='max-w-3xl mx-auto border-l-2 border-r-2 border-dashed relative' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)', height: '20px' }}>
+                                <div className='w-[19px] h-full mx-auto border-l-2 border-r-2 border-dashed' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-                return (
-                    <React.Fragment key={rowIndex}>
-                        <div className='w-full border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} data-blogs>
-                            <div className='max-w-3xl border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
-                                <div className=''>
-                                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                        {row.map((blog, colIndex) => (
-                                            <NavLink
-                                                key={blog.slug}
-                                                to={`/blog/${blog.slug}`}
-                                                className={`group p-4 transition-all duration-200 border-0 md:${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
+                    {/* Blog Rows - Show all blogs */}
+                    {totalBlogs > 0 && rows.map((row, rowIndex) => {
+                        const isLastRow = rowIndex === rows.length - 1
+                        const needsPlaceholder = isLastRow && isLastRowOdd
+
+                        return (
+                            <React.Fragment key={rowIndex}>
+                                <div className='w-full border-dashed' style={{ borderBottomColor: 'var(--border-color)' }} data-blogs>
+                                    <div className='max-w-3xl border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+                                        <div className=''>
+                                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                                {row.map((blog, colIndex) => (
+                                                    <NavLink
+                                                        key={blog.slug}
+                                                        to={`/blog/${blog.slug}`}
+                                                        className={`group p-4 transition-all duration-200 border-0 md:${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
                                                     } border-dashed border-b-2 md:border-b-0`}
-                                                style={{
-                                                    borderColor: 'var(--border-color)',
-                                                }}
-                                            >
-                                                {/* Blog Image */}
-                                                <div className='mb-4 overflow-hidden rounded-lg'>
-                                                    <img
-                                                        src={blog.image}
-                                                        alt={blog.title}
-                                                        className='w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105'
-                                                    />
-                                                </div>
+                                                        style={{
+                                                            borderColor: 'var(--border-color)',
+                                                        }}
+                                                    >
+                                                        {/* Blog Image */}
+                                                        <div className='mb-4 overflow-hidden rounded-lg'>
+                                                            <img
+                                                                src={blog.image}
+                                                                alt={blog.title}
+                                                                className='w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105'
+                                                            />
+                                                        </div>
 
-                                                {/* Blog Title */}
-                                                <h3 className='text-lg md:text-xl font-mono font-bold mb-2 line-clamp-2' style={{ color: 'var(--text-primary)' }}>
-                                                    {blog.title}
-                                                </h3>
+                                                        {/* Blog Title */}
+                                                        <h3 className='text-lg md:text-xl font-mono font-bold mb-2 line-clamp-2' style={{ color: 'var(--text-primary)' }}>
+                                                            {blog.title}
+                                                        </h3>
 
-                                                {/* Blog Description */}
-                                                <p className='text-sm font-mono mb-3 line-clamp-2' style={{ color: 'var(--text-secondary)' }}>
-                                                    {blog.description}
-                                                </p>
+                                                        {/* Blog Description */}
+                                                        <p className='text-sm font-mono mb-3 line-clamp-2' style={{ color: 'var(--text-secondary)' }}>
+                                                            {blog.description}
+                                                        </p>
 
-                                                {/* Date */}
-                                                <div className='flex items-center gap-4 text-xs font-mono' style={{ color: 'var(--text-secondary)' }}>
-                                                    <div className='flex items-center gap-1'>
-                                                        <span>{formatDate(blog.date)}</span>
+                                                        {/* Date */}
+                                                        <div className='flex items-center gap-4 text-xs font-mono' style={{ color: 'var(--text-secondary)' }}>
+                                                            <div className='flex items-center gap-1'>
+                                                                <span>{formatDate(blog.date)}</span>
+                                                            </div>
+                                                        </div>
+                                                    </NavLink>
+                                                ))}
+
+                                                {/* Placeholder for odd number of blogs in last row */}
+                                                {needsPlaceholder && (
+                                                    <div className='p-4 md:border-l-2 border-dashed border-b-2 md:border-b-0 flex flex-col items-center justify-center text-center'
+                                                        style={{
+                                                            borderColor: 'var(--border-color)'
+                                                        }}
+                                                    >
+                                                        <div className='opacity-50'>
+                                                            <p className='text-lg md:text-xl font-mono font-bold mb-2' style={{ color: 'var(--text-secondary)' }}>
+                                                                More Blogs
+                                                            </p>
+                                                            <p className='text-sm font-mono' style={{ color: 'var(--text-secondary)' }}>
+                                                                Coming Soon...
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </NavLink>
-                                        ))}
-
-                                        {/* Placeholder for odd number of blogs in last row */}
-                                        {needsPlaceholder && (
-                                            <div className='p-4 md:border-l-2 border-dashed border-b-2 md:border-b-0 flex flex-col items-center justify-center text-center'
-                                                style={{
-                                                    borderColor: 'var(--border-color)'
-                                                }}
-                                            >
-                                                <div className='opacity-50'>
-                                                    <p className='text-lg md:text-xl font-mono font-bold mb-2' style={{ color: 'var(--text-secondary)' }}>
-                                                        More Blogs
-                                                    </p>
-                                                    <p className='text-sm font-mono' style={{ color: 'var(--text-secondary)' }}>
-                                                        Coming Soon...
-                                                    </p>
-                                                </div>
+                                                )}
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        {rowIndex < rows.length + 1 && (
-                            <div className='w-full border-b-2 border-t-2 border-dashed relative hidden md:block' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
-                                <div className='max-w-3xl mx-auto border-l-2 border-r-2 border-dashed relative' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)', height: '20px' }}>
-                                    <div className='w-[19px] h-full mx-auto border-l-2 border-r-2 border-dashed' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+                                {rowIndex < rows.length + 1 && (
+                                    <div className='w-full border-b-2 border-t-2 border-dashed relative hidden md:block' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
+                                        <div className='max-w-3xl mx-auto border-l-2 border-r-2 border-dashed relative' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)', height: '20px' }}>
+                                            <div className='w-[19px] h-full mx-auto border-l-2 border-r-2 border-dashed' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        )}
-                    </React.Fragment>
-                )
-            })}
+                                )}
+                            </React.Fragment>
+                        )
+                    })}
+                </>
+            )}
         </>
     )
 }

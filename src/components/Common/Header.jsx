@@ -145,9 +145,11 @@ const Header = () => {
             }} data-header>
                 <div className='max-w-3xl mx-auto border-x-2 border-dashed' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
                     <div className='flex justify-between items-center h-12 md:h-15 p-3'>
-                        <span className={`text-lg md:text-xl font-semibold transition-opacity duration-300 ${showAN ? 'opacity-100' : 'opacity-0'}`} style={{ color: 'var(--text-primary)' }}>
-                            AN
-                        </span>
+                        <NavLink to="/" className='flex items-center gap-2'>
+                            <span className={`text-lg md:text-xl font-semibold transition-opacity duration-300 ${showAN ? 'opacity-100' : 'opacity-0'}`} style={{ color: 'var(--text-primary)' }}>
+                                AN
+                            </span>
+                        </NavLink>
                         <div className={`${showAN ? 'hidden' : 'block'} w-8 md:w-10`}></div>
 
                         <div className='flex items-center gap-3 md:gap-4'>
@@ -155,7 +157,7 @@ const Header = () => {
                             <div className='flex items-center gap-2 cursor-pointer'>
                                 <button
                                     onClick={() => setIsSearchOpen(true)}
-                                    className='flex items-center hidden md:block gap-2 bg-gray-100 px-2 py-1.5 rounded-md hover:bg-gray-200 transition-colors'
+                                    className='flex items-center gap-2 bg-gray-100 px-2 py-1.5 rounded-md hover:bg-gray-200 transition-colors'
                                 >
                                     <Search className='w-4 h-4' />
                                     <div className='hidden md:flex gap-1'>

@@ -1,61 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import Heading from './Heading'
-import { NavLink } from 'react-router'
+import { NavLink, Link } from 'react-router'
+import blogUtils from '../../utils/blogUtils'
 
 const Blogs = () => {
-    const allBlogs = [
-        {
-            title: "Building a Component Library with React and Tailwind",
-            description: "Learn how to create a reusable component library that scales across multiple projects.",
-            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop",
-            date: "2025-04-15",
-            slug: "building-component-library"
-        },
-        {
-            title: "Mastering TypeScript: Advanced Patterns",
-            description: "Deep dive into advanced TypeScript patterns for better type safety and developer experience.",
-            image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=600&h=400&fit=crop",
-            date: "2025-04-10",
-            slug: "mastering-typescript"
-        },
-        {
-            title: "The Art of Pixel-Perfect Design Implementation",
-            description: "Tips and tricks for implementing designs with precision and attention to detail.",
-            image: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600&h=400&fit=crop",
-            date: "2025-04-05",
-            slug: "pixel-perfect-design"
-        },
-        {
-            title: "Optimizing Next.js Applications for Performance",
-            description: "Techniques to improve loading times and overall performance in Next.js apps.",
-            image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop",
-            date: "2025-03-28",
-            slug: "optimizing-nextjs"
-        },
-        {
-            title: "Another Blog Post",
-            description: "This is an extra blog post that won't be shown.",
-            image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop",
-            date: "2025-03-20",
-            slug: "another-blog"
+
+    const [allBlogs, setAllBlogs] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const loadBlogs = async () => {
+            const posts = await blogUtils.getAllPosts()
+            setAllBlogs(posts)
+            setLoading(false)
         }
-    ]
+        loadBlogs()
+    }, [])
 
     // Handle different cases based on number of blogs
     const totalBlogs = allBlogs.length
-    
+
     let blogsToShow = []
     let hasMoreBlogs = false
-    
+
     if (totalBlogs === 0) {
         // No blogs case
         blogsToShow = []
         hasMoreBlogs = false
-    } else if (totalBlogs === 1) {
-        // If only 1 blog, don't show any, just show "View All" button
-        blogsToShow = []
-        hasMoreBlogs = true
     } else if (totalBlogs === 3) {
         // If 3 blogs, show only 2 (first 2)
         blogsToShow = allBlogs.slice(0, 2)
@@ -73,6 +45,22 @@ const Blogs = () => {
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const year = date.getFullYear()
         return `${day}.${month}.${year}`
+    }
+    if (loading) {
+        return (
+            <>
+                <Heading title="Blog" count={0} />
+                <div className='w-full border-dashed' data-blogs>
+                    <div className='max-w-3xl border-l-2 border-r-2 border-dashed mx-auto' style={{ borderLeftColor: 'var(--border-color)', borderRightColor: 'var(--border-color)' }}>
+                        <div className='py-12 text-center'>
+                            <p className='font-mono' style={{ color: 'var(--text-secondary)' }}>
+                                Loading blogs...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
     }
 
     // Spacing Component (inline)
@@ -94,7 +82,7 @@ const Blogs = () => {
     return (
         <>
             <Heading title="Blog" count={totalBlogs} />
-            
+
             {/* No Blogs Case */}
             {totalBlogs === 0 && (
                 <div className='w-full border-dashed' data-blogs>
@@ -107,7 +95,7 @@ const Blogs = () => {
                     </div>
                 </div>
             )}
-            
+
             {/* Blog Rows - Only show if there are blogs to display */}
             {blogsToShow.length > 0 && rows.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
@@ -116,9 +104,9 @@ const Blogs = () => {
                             <div className=''>
                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                     {row.map((blog, colIndex) => (
-                                        <a
+                                        <Link
                                             key={blog.slug}
-                                            href={`/blog/${blog.slug}`}
+                                            to={`/blog/${blog.slug}`}
                                             className={`group p-4 transition-all duration-200 md:${colIndex === 0 ? 'border-r-2' : 'border-l-2'}
                                                 } border-dashed border-b-2 md:border-b-0`}
                                             style={{
@@ -150,7 +138,7 @@ const Blogs = () => {
                                                     <span>{formatDate(blog.date)}</span>
                                                 </div>
                                             </div>
-                                        </a>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
@@ -179,6 +167,11 @@ const Blogs = () => {
                             </NavLink>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {blogsToShow.length <3 && (
+                <div className='w-full border-b-2 border-dashed relative hidden md:block' style={{ borderBottomColor: 'var(--border-color)', borderTopColor: 'var(--border-color)' }}>
                 </div>
             )}
         </>
